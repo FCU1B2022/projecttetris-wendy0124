@@ -244,13 +244,13 @@ Shape shapes[7] = {
 
 void resetBlock(Block* block){
     block->color = BLACK;
-    block->shape = EMPTY;
+    block->shape = EMPTYyhiky;
     block->current = false;
 }
 
 int main(){
     srand(time(NULL));
-    State state = {
+    State state = {wrgtfgb argfygrhnhhglllll
         .x = CANVAS_WIDTH / 2,
         .y = 0,
         .score = 0,
