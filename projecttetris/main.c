@@ -22,6 +22,8 @@
 #define CANVAS_WIDTH 10
 #define CANVAS_HEIGHT 20
 
+int score = 0;
+
 typedef enum {
     RED = 41,
     GREEN,
@@ -280,6 +282,8 @@ void resetBlock(Block* block)
     block->current = false;
 }
 
+bool isGameStarted = false;
+
 bool move(Block canvas[CANVAS_HEIGHT][CANVAS_WIDTH], int originalX, int originalY, int originalRotate, int newX, int newY, int newRotate, ShapeId shapeId) {
     Shape shapeData = shapes[shapeId];
     int size = shapeData.size;
@@ -322,6 +326,14 @@ bool move(Block canvas[CANVAS_HEIGHT][CANVAS_WIDTH], int originalX, int original
 void printCanvas(Block canvas[CANVAS_HEIGHT][CANVAS_WIDTH], State* state)
 {
     printf("\033[0;0H\n");
+
+    if (!isGameStarted) {
+        printf("歡迎來到俄羅斯方塊!\n");
+        printf("按下空白健來開始遊戲");
+        return;
+
+    }
+
     for (int i = 0; i < CANVAS_HEIGHT; i++) {
         printf("|");
         for (int j = 0; j < CANVAS_WIDTH; j++) {
@@ -387,12 +399,21 @@ int clearLine(Block canvas[CANVAS_HEIGHT][CANVAS_WIDTH]) {
         }
     }
 
-
+    score += linesCleared;
     return linesCleared;
 }
 
 void logic(Block canvas[CANVAS_HEIGHT][CANVAS_WIDTH], State* state)
 {
+    if (!isGameStarted && FALL_FUNC()) {
+        isGameStarted = true;
+        return;
+    }
+
+    if (!isGameStarted) {
+        return;
+    }
+
     if (ROTATE_FUNC()) {
         int newRotate = (state->rotate + 1) % 4;
         if (move(canvas, state->x, state->y, state->rotate, state->x, state->y, newRotate, state->queue[0]))
@@ -442,6 +463,7 @@ void logic(Block canvas[CANVAS_HEIGHT][CANVAS_WIDTH], State* state)
             if (!move(canvas, state->x, state->y, state->rotate, state->x, state->y, state->rotate, state->queue[0]))
             {
                 printf("\033[%d;%dH\x1b[41m GAME OVER \x1b[0m\033[%d;%dH", CANVAS_HEIGHT - 3, CANVAS_WIDTH * 2 + 5, CANVAS_HEIGHT + 5, 0);
+                printf("\033[%d;%dH\x1b[41m Score: %d \x1b[0m\033[%d;%dH", CANVAS_HEIGHT - 1,  CANVAS_WIDTH * 2 + 5, state->score);
                 exit(0);
             }
         }
@@ -486,4 +508,4 @@ int main()
         Sleep(100);
     }
 
-}
+}  
